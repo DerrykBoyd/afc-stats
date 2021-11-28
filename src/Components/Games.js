@@ -4,6 +4,7 @@ import '../styles/GameList.css';
 import StatTable from './StatTable';
 import SubStatTable from './SubStatTable';
 import { toast } from 'react-toastify';
+import { getStatsCsvData, getSubsCsvData } from '../utils/getCsvData';
 
 const statHeaders = [
   { label: 'Name', key: 'name' },
@@ -40,8 +41,11 @@ const GameCard = (props) => {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [note, setNote] = useState('');
 
-  let game = props.game;
-  let gameDate = game.date.toDate();
+  const game = props.game;
+  const gameDate = game.date.toDate();
+
+  const {gameHistoryCsv, playerStatsCsv} = getStatsCsvData(game);
+  const {subHistoryCsv, subStatsCsv} = getSubsCsvData(game);
 
   const generateFileName = (str) => {
     return `${gameDate.getFullYear()}-${gameDate.getMonth() + 1}-${gameDate.getDate()}-${
@@ -88,17 +92,17 @@ const GameCard = (props) => {
       <div className="game-list-btns">
         <CSVLink
           className="btn game-list-btn"
-          data={game.gameHistory || game.subHistory}
-          filename={game.gameHistory ? generateFileName('GAME') : generateFileName('SUBS')}
+          data={gameHistoryCsv || subHistoryCsv}
+          filename={gameHistoryCsv ? generateFileName('GAME') : generateFileName('SUBS')}
           target="_blank"
         >
-          {game.gameHistory ? `Game CSV` : 'Subs CSV'}
+          {gameHistoryCsv ? `Game CSV` : 'Subs CSV'}
           <i className="material-icons md-18">get_app</i>
         </CSVLink>
-        {game.playerStats && (
+        {playerStatsCsv && (
           <CSVLink
             className="btn game-list-btn"
-            data={game.playerStats}
+            data={playerStatsCsv}
             headers={statHeaders}
             filename={generateFileName('STATS')}
             target="_blank"
@@ -107,10 +111,10 @@ const GameCard = (props) => {
             <i className="material-icons md-18">get_app</i>
           </CSVLink>
         )}
-        {game.subStats && (
+        {subStatsCsv && (
           <CSVLink
             className="btn game-list-btn"
-            data={game.subStats}
+            data={subStatsCsv}
             filename={generateFileName('SubStats')}
             target="_blank"
           >
