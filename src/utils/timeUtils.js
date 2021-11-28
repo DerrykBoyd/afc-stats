@@ -14,3 +14,8 @@ export const timeOnPoint = (lastTimeIn, gameTime) => {
   let timeOnSecs = timeToSecs(lastTimeIn) - timeToSecs(gameTime);
   return timeToMinSec(timeOnSecs);
 };
+
+export const secsToIsoString = (seconds) => {
+  let date = new Date(parseInt(seconds * 1000));
+  return date.toISOString().substr(11, 12);
+}
