@@ -19,7 +19,11 @@ export function getStatsCsvData(game) {
 export function getSubsCsvData(game) {
   if (!game.subHistory) return {};
   const subHistoryCsv = game.subHistory.map((entry) => {
-    return { ...entry, gameTime: secsToIsoString(timeToSecs(entry.gameTime)) };
+    return { 
+      ...entry, 
+      gameTime: secsToIsoString(timeToSecs(entry.gameTime)),
+      timeOnField: secsToIsoString(entry.timeOnField),
+     };
   });
   const subStatsCsv = game.subStats.map((entry) => {
     return { 
