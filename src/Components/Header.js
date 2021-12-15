@@ -29,10 +29,10 @@ export default function Header(props) {
                 <a href="https://afc-stats.netlify.app/">Live Site</a>
               </p>
               <a href="https://afc-stats.netlify.app/">
-                <button className="btn">Go to live site</button>
+                <button className="btn">Go to real app</button>
               </a>
               <button className="btn btn-del" onClick={() => setModalOpen(false)}>
-                Continue to test
+                Go to test app
               </button>
             </div>
           )}
