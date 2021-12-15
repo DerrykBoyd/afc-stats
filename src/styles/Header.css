@@ -28,3 +28,7 @@ h1 {
   background-color: white;
   z-index: 1;
 }
+
+.staging-modal > h2, .staging-modal > p {
+  margin: 1rem;
+}
