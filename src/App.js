@@ -98,7 +98,7 @@ function App() {
   const [dbUser, setDbUser] = useState(null);
   const [fetchedGames, setFetchedGames] = useState([]);
   const [gameFinished, setGameFinished] = useState(localStorage.getItem('gameFinished') === 'true');
-  const [gameFormat, setGameFormat] = useState(6); // number of players per team, default 6
+  const [gameFormat, setGameFormat] = useState(4); // number of players per team, default 4
   const [gameLength, setGameLength] = useState(localStorage.getItem('gameLength') || 25); //1 for testing
   const [gameStarted, setGameStarted] = useState(localStorage.getItem('gameStarted') === 'true');
   const [gameHistory, setGameHistory] = useState(
@@ -341,7 +341,7 @@ function App() {
     }
   }, [user, loadUser]);
 
-  // save game variables to localstorage to allow continuation of games on page reload
+  // save game variables to localStorage to allow continuation of games on page reload
   useEffect(() => {
     localStorage.setItem('gameTime', gameTime);
     localStorage.setItem('gameTimeSecs', gameTimeSecs);
@@ -496,14 +496,16 @@ function App() {
   };
 
   const downloadBackupJSON = (gameDetails) => {
-    const {statTeam, darkTeam, lightTeam} = gameDetails;
+    const { statTeam, darkTeam, lightTeam } = gameDetails;
     const gameData =
       'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(gameDetails));
     const d = new Date();
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
     const day = d.getDate();
-    const fileNameStat = `${statTeam}-vs-${darkTeam === statTeam ? lightTeam : darkTeam}-${year}-${month}-${day}.json`;
+    const fileNameStat = `${statTeam}-vs-${
+      darkTeam === statTeam ? lightTeam : darkTeam
+    }-${year}-${month}-${day}.json`;
     const element = document.createElement('a');
     element.setAttribute('href', gameData);
     element.setAttribute('download', fileNameStat);
@@ -513,8 +515,7 @@ function App() {
     document.body.removeChild(element);
   };
 
-  const saveGame = (gameType) => {
-    const gameDate = new Date();
+  function getGameDetails(gameDate, gameType) {
     const gameDetails = {
       _id: gameDate.toISOString(),
       date: Timestamp.fromDate(gameDate),
@@ -524,7 +525,7 @@ function App() {
       statTeam: statTeam,
       gameLength: gameLength,
       testGame: testGame,
-      statTaker: dbUser.email,
+      statTaker: dbUser?.email,
     };
     if (gameType === 'stats') {
       gameDetails.playerStats = playerStats;
@@ -535,6 +536,25 @@ function App() {
       gameDetails.subStats = subStats;
       gameDetails.subHistory = subHistory;
     }
+    return gameDetails;
+  }
+
+  const backupGame = () => {
+    const gameDate = new Date();
+    gameDate.setHours(0, 0, 0, 0);
+    const gameDetails = getGameDetails(gameDate, 'stats');
+    if (darkTeam && lightTeam) {
+      localStorage.setItem(`${darkTeam}-vs-${lightTeam}-${gameDate}`, JSON.stringify(gameDetails));
+    }
+  };
+
+  useEffect(() => {
+    backupGame();
+  }, [gameHistory, score, playerStats])
+
+  const saveGame = (gameType) => {
+    const gameDate = new Date();
+    const gameDetails = getGameDetails(gameDate, gameType);
     const newFetchedGames = [...fetchedGames];
     newFetchedGames.unshift(gameDetails);
     setFetchedGames(newFetchedGames);
@@ -608,6 +628,7 @@ function App() {
         <Route path="/stats">
           {user ? (
             <Stats
+              backupGame={backupGame}
               userID={user.email}
               teams={teams}
               showStatSetup={showStatSetup}
