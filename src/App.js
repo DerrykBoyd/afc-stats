@@ -541,7 +541,7 @@ function App() {
     },
     [
       darkTeam,
-      dbUser.email,
+      dbUser,
       gameHistory,
       gameLength,
       lightTeam,
