@@ -7,8 +7,26 @@ import Papa from 'papaparse';
  */
 export function getStatsCsvData(game) {
   if (!game.gameHistory) return {};
+
+  const teams = Object.keys(game.gameHistory[0]).filter((key) => key.includes('_score'));
+  const statTeam = game.gameHistory[0].statTeam;
+  const otherTeam = teams.find((team) => !team.includes(statTeam)).split('_')[0];
+
   const gameHistoryCsv = game.gameHistory.map((entry) => {
-    return { ...entry, gameTime: secsToIsoString(timeToSecs(entry.gameTime)) };
+    return {
+      date: entry.date,
+      time: entry.time,
+      gameTime: secsToIsoString(timeToSecs(entry.gameTime)),
+      statTeam: entry.statTeam,
+      otherTeam,
+      statTeamScore: entry[`${statTeam}_score`],
+      otherTeamScore: entry[`${otherTeam}_score`],
+      action: entry.action,
+      player: entry.player,
+      lastPlayer: entry.lastPlayer,
+      secLastPlayer: entry.secLastPlayer,
+      turnover: entry.turnover,
+    };
   });
   return { gameHistoryCsv, playerStatsCsv: game.playerStats };
 }
