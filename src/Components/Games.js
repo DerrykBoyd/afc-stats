@@ -4,18 +4,18 @@ import '../styles/GameList.css';
 import StatTable from './StatTable';
 import SubStatTable from './SubStatTable';
 import { toast } from 'react-toastify';
-import { getStatsCsvData, getSubsCsvData } from '../utils/getCsvData';
+import { getStatsCsvData, getSubsCsvData, generateFileName } from '../utils/getCsvData';
 
-const statHeaders = [
-  { label: 'Name', key: 'name' },
-  { label: 'Touches', key: 'Touch' },
-  { label: 'Points', key: 'Point' },
-  { label: 'Assists', key: 'Assist' },
-  { label: 'D-Plays', key: 'D-Play' },
-  { label: 'Drops', key: 'Drop' },
-  { label: 'Throwaways', key: 'T-Away' },
-  { label: 'GSO', key: 'GSO' },
-];
+// const statHeaders = [
+//   { label: 'Name', key: 'name' },
+//   { label: 'Touches', key: 'Touch' },
+//   { label: 'Points', key: 'Point' },
+//   { label: 'Assists', key: 'Assist' },
+//   { label: 'D-Plays', key: 'D-Play' },
+//   { label: 'Drops', key: 'Drop' },
+//   { label: 'Throwaways', key: 'T-Away' },
+//   { label: 'GSO', key: 'GSO' },
+// ];
 
 const combinedFileName = (str, date) => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}-${str}.csv`;
@@ -42,16 +42,9 @@ const GameCard = (props) => {
   const [note, setNote] = useState('');
 
   const game = props.game;
-  const gameDate = game.date.toDate();
 
-  const {gameHistoryCsv, playerStatsCsv} = getStatsCsvData(game);
-  const {subHistoryCsv, subStatsCsv} = getSubsCsvData(game);
-
-  const generateFileName = (str) => {
-    return `${gameDate.getFullYear()}-${gameDate.getMonth() + 1}-${gameDate.getDate()}-${
-      game.darkTeam
-    }-vs-${game.lightTeam}-${str}-${game.statTeam}.csv`;
-  };
+  const { gameHistoryCsv } = getStatsCsvData(game);
+  const { subHistoryCsv } = getSubsCsvData(game);
 
   const toggleShowStats = () => setShowStats(!showStats);
 
@@ -93,13 +86,15 @@ const GameCard = (props) => {
         <CSVLink
           className="btn game-list-btn"
           data={gameHistoryCsv || subHistoryCsv}
-          filename={gameHistoryCsv ? generateFileName('GAME') : generateFileName('SUBS')}
+          filename={
+            gameHistoryCsv ? generateFileName(game, 'Stats') : generateFileName(game, 'Subs')
+          }
           target="_blank"
         >
           {gameHistoryCsv ? `Game CSV` : 'Subs CSV'}
           <i className="material-icons md-18">get_app</i>
         </CSVLink>
-        {playerStatsCsv && (
+        {/* {playerStatsCsv && (
           <CSVLink
             className="btn game-list-btn"
             data={playerStatsCsv}
@@ -121,7 +116,7 @@ const GameCard = (props) => {
             Stats CSV
             <i className="material-icons md-18">get_app</i>
           </CSVLink>
-        )}
+        )} */}
         {!showStats && (
           <button className="btn game-list-btn" onClick={toggleShowStats}>
             Show Stats<i className="material-icons md-18">arrow_drop_down</i>

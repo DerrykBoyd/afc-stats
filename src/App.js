@@ -24,6 +24,9 @@ import ServiceWorkerToast from './Components/Toasts/ServiceWorkerToast';
 // assets
 import defaultProfile from './assets/profile-avatars/050.svg';
 
+// utils
+import { downloadGameCsv } from '../src/utils/getCsvData';
+
 const Timestamp = firebase.firestore.Timestamp;
 
 const Slide = cssTransition({
@@ -495,24 +498,6 @@ function App() {
     });
   };
 
-  const downloadBackupJSON = (gameDetails) => {
-    const {statTeam, darkTeam, lightTeam} = gameDetails;
-    const gameData =
-      'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(gameDetails));
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    const fileNameStat = `${statTeam}-vs-${darkTeam === statTeam ? lightTeam : darkTeam}-${year}-${month}-${day}.json`;
-    const element = document.createElement('a');
-    element.setAttribute('href', gameData);
-    element.setAttribute('download', fileNameStat);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
-
   const saveGame = (gameType) => {
     const gameDate = new Date();
     const gameDetails = {
@@ -540,8 +525,10 @@ function App() {
     setFetchedGames(newFetchedGames);
     // add to the Database
     db.collection('games').doc(gameDetails._id).set(gameDetails);
+
     // download backup data
-    downloadBackupJSON(gameDetails);
+    downloadGameCsv(gameDetails);
+
     resetGame();
   };
 
