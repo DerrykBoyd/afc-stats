@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function GameInfo(props) {
   return (
@@ -15,7 +15,7 @@ export default function GameInfo(props) {
             onClick={() => {
               props.startTimer();
               props.setPaused(false);
-              console.log('start timer');
+              console.log("start timer");
             }}
           >
             play_arrow
@@ -26,7 +26,7 @@ export default function GameInfo(props) {
               onClick={() => {
                 props.pauseTimer();
                 props.setPaused(true);
-                console.log('pause timer');
+                console.log("pause timer");
               }}
             >
               pause
@@ -39,7 +39,7 @@ export default function GameInfo(props) {
                 props.resetTimer();
                 props.pauseTimer();
                 props.setPaused(false);
-                console.log('reset timer');
+                console.log("reset timer");
               }}
             >
               replay
@@ -49,7 +49,9 @@ export default function GameInfo(props) {
       </div>
       <div className="score-card light">
         <span id="team-name">{props.lightTeam}</span>
-        {props.score && <span className="score light">{props.score.light}</span>}
+        {props.score && (
+          <span className="score light">{props.score.light}</span>
+        )}
       </div>
     </div>
   );

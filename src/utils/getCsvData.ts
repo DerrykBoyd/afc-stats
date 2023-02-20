@@ -1,16 +1,21 @@
-import { secsToIsoString, timeToSecs } from './timeUtils';
-import Papa from 'papaparse';
+import { secsToIsoString, timeToSecs } from "./timeUtils";
+import Papa from "papaparse";
+import { Game } from "../react-query/games";
 
 /** Takes a stats game object and converts times to HH:MM:SS.mmm
  * @param {object} game - The game object
  * @returns {gameHistoryCsv: object, playerStatsCsv: object} - The game object with times converted to HH:MM:SS.mmm
  */
-export function getStatsCsvData(game) {
-  if (!game.gameHistory) return {};
+export function getStatsCsvData(game: Game) {
+  if (!game.gameHistory?.[0]) return {};
 
-  const teams = Object.keys(game.gameHistory[0]).filter((key) => key.includes('_score'));
+  const teams = Object.keys(game.gameHistory[0]).filter((key) =>
+    key.includes("_score")
+  );
+
   const statTeam = game.gameHistory[0].statTeam;
-  const otherTeam = teams.find((team) => !team.includes(statTeam)).split('_')[0];
+  const otherTeam =
+    teams && teams.find((team) => !team.includes(statTeam))?.split("_")[0];
 
   const gameHistoryCsv = game.gameHistory.map((entry) => {
     return {
@@ -28,6 +33,7 @@ export function getStatsCsvData(game) {
       turnover: entry.turnover,
     };
   });
+
   return { gameHistoryCsv, playerStatsCsv: game.playerStats };
 }
 
@@ -35,7 +41,7 @@ export function getStatsCsvData(game) {
  * @param {object} game - The game object
  * @returns {subHistoryCsv: object, subStatsCsv: object} - The game object with times converted to HH:MM:SS.mmm
  */
-export function getSubsCsvData(game) {
+export function getSubsCsvData(game: Game) {
   if (!game.subHistory) return {};
   const subHistoryCsv = game.subHistory.map((entry) => {
     return {
@@ -54,29 +60,34 @@ export function getSubsCsvData(game) {
   return { subHistoryCsv, subStatsCsv };
 }
 
-export function getCsvString(data) {
+export function getCsvString(data: Game) {
   const { gameHistoryCsv } = getStatsCsvData(data);
   const { subHistoryCsv } = getSubsCsvData(data);
-  const csvString = Papa.unparse(gameHistoryCsv || subHistoryCsv);
+  const csvString = Papa.unparse(gameHistoryCsv || subHistoryCsv || []);
   return csvString;
 }
 
-export function downloadGameCsv(data) {
+export function downloadGameCsv(data: Game) {
   const csvString = getCsvString(data);
-  const csvData = new Blob([csvString], { type: 'text/csv' });
+  const csvData = new Blob([csvString], { type: "text/csv" });
   const csvUrl = URL.createObjectURL(csvData);
-  const tempLink = document.createElement('a');
+  const tempLink = document.createElement("a");
   tempLink.href = csvUrl;
   tempLink.setAttribute(
-    'download',
-    generateFileName(data, getStatsCsvData(data).gameHistoryCsv ? 'stats' : 'subs')
+    "download",
+    generateFileName(
+      data,
+      getStatsCsvData(data).gameHistoryCsv ? "stats" : "subs"
+    )
   );
   tempLink.click();
 }
 
-export const generateFileName = (gameData, str) => {
+export const generateFileName = (gameData: Game, str: string) => {
   const gameDate = gameData.date.toDate();
-  return `${gameDate.getFullYear()}-${gameDate.getMonth() + 1}-${gameDate.getDate()}-${
-    gameData.darkTeam
-  }-vs-${gameData.lightTeam}-${str}-${gameData.statTeam}.csv`;
+  return `${gameDate.getFullYear()}-${
+    gameDate.getMonth() + 1
+  }-${gameDate.getDate()}-${gameData.darkTeam}-vs-${
+    gameData.lightTeam
+  }-${str}-${gameData.statTeam}.csv`;
 };

@@ -1,10 +1,14 @@
-import React from 'react';
-import '../styles/Header.css';
+import React from "react";
+import { firebaseApp } from "../App";
+import "../styles/Header.css";
 
-export default function Header(props) {
-  const [modalOpen, setModalOpen] = React.useState(process.env.REACT_APP_ENV === 'staging');
+export default function Header() {
+  const [modalOpen, setModalOpen] = React.useState(
+    import.meta.env.VITE_ENV === "staging"
+  );
+
   const signOut = () => {
-    props.firebaseApp.auth().signOut();
+    firebaseApp.auth().signOut();
     localStorage.clear();
   };
 
@@ -12,26 +16,29 @@ export default function Header(props) {
     <>
       <header className="app-header">
         <h1>{`AFC PL Stats`}</h1>
-        {props.firebaseApp.auth().currentUser && (
+        {firebaseApp.auth().currentUser && (
           <button className="btn logout-btn" onClick={signOut}>
             Logout
           </button>
         )}
       </header>
-      {process.env.REACT_APP_ENV === 'staging' && (
+      {window.location.origin.includes("staging") && (
         <>
           <h1>** STAGING SITE **</h1>
           {modalOpen && (
-            <div class="staging-modal">
+            <div className="staging-modal">
               <h2>This is the staging site for testing only.</h2>
               <p>
-                If you are taking stats for premier league go to the{' '}
+                If you are taking stats for premier league go to the{" "}
                 <a href="https://afc-stats.netlify.app/">Live Site</a>
               </p>
               <a href="https://afc-stats.netlify.app/">
                 <button className="btn">Go to real app</button>
               </a>
-              <button className="btn btn-del" onClick={() => setModalOpen(false)}>
+              <button
+                className="btn btn-del"
+                onClick={() => setModalOpen(false)}
+              >
                 Go to test app
               </button>
             </div>

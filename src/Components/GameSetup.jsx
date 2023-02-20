@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
-import '../styles/GameSetup.css';
+import React, { useState } from "react";
+import { useFetchTeams } from "../react-query/teams";
+import "../styles/GameSetup.css";
 
 export default function GameSetup(props) {
-  const [time, setTime] = useState('25');
-  const [dark, setDark] = useState('');
-  const [light, setLight] = useState('');
-  const [statTeam, setStatTeam] = useState('');
-  const [offence, setOffence] = useState('');
-  const [error, setError] = useState('');
-  const [gameFormat, setGameFormat] = useState('6v6');
+  const [time, setTime] = useState("25");
+  const [dark, setDark] = useState("");
+  const [light, setLight] = useState("");
+  const [statTeam, setStatTeam] = useState("");
+  const [offence, setOffence] = useState("");
+  const [error, setError] = useState("");
+  const [gameFormat, setGameFormat] = useState("6v6");
+
+  const { data: teams } = useFetchTeams();
 
   let teamNames = [<option value="" key=""></option>];
-  for (let team of props.teams) {
+  for (let team of teams || []) {
     teamNames.push(
       <option value={team.name} key={team.name}>
         {team.name}
@@ -27,18 +30,18 @@ export default function GameSetup(props) {
 
   const submitFinish = () => {
     if (!isValidTime(time)) {
-      setError('Time should be between 1 - 120 mins');
+      setError("Time should be between 1 - 120 mins");
       return;
     }
     if (!dark || !light || !statTeam || (props.forStats && !offence)) {
-      setError('Please choose all options');
+      setError("Please choose all options");
       return;
     }
     let offenceBool;
     if (props.forStats) {
       statTeam === offence ? (offenceBool = true) : (offenceBool = false);
     } else {
-      offenceBool = 'subs';
+      offenceBool = "subs";
     }
     props.finishSetup(time, dark, light, statTeam, offenceBool, gameFormat);
   };
@@ -55,7 +58,9 @@ export default function GameSetup(props) {
           <span>Check Roster!</span>
         </div>
         <div>
-          <span>Confirm roster on the Teams page before setting up your game.</span>
+          <span>
+            Confirm roster on the Teams page before setting up your game.
+          </span>
         </div>
       </div>
       <label htmlFor="game-length">Game Length (mins)</label>
@@ -68,16 +73,30 @@ export default function GameSetup(props) {
         onChange={(e) => setTime(e.target.value)}
       />
       <label htmlFor="dark-team">Select Dark Team</label>
-      <select name="dark-team" value={dark} onChange={(e) => setDark(e.target.value)}>
+      <select
+        name="dark-team"
+        value={dark}
+        onChange={(e) => setDark(e.target.value)}
+      >
         {teamNames}
       </select>
       <label htmlFor="light-team">Select Light Team</label>
-      <select name="light-team" value={light} onChange={(e) => setLight(e.target.value)}>
+      <select
+        name="light-team"
+        value={light}
+        onChange={(e) => setLight(e.target.value)}
+      >
         {teamNames}
       </select>
 
-      <label htmlFor="stat-team">{`Tracking ${props.forStats ? 'Stats' : 'Subs'} For`}</label>
-      <select name="stat-team" value={statTeam} onChange={(e) => setStatTeam(e.target.value)}>
+      <label htmlFor="stat-team">{`Tracking ${
+        props.forStats ? "Stats" : "Subs"
+      } For`}</label>
+      <select
+        name="stat-team"
+        value={statTeam}
+        onChange={(e) => setStatTeam(e.target.value)}
+      >
         <option></option>
         <option>{`${dark}`}</option>
         <option>{`${light}`}</option>
@@ -85,7 +104,11 @@ export default function GameSetup(props) {
       {props.forStats && (
         <>
           <label htmlFor="offence-team">Team on Offence</label>
-          <select name="offence-team" value={offence} onChange={(e) => setOffence(e.target.value)}>
+          <select
+            name="offence-team"
+            value={offence}
+            onChange={(e) => setOffence(e.target.value)}
+          >
             <option></option>
             <option>{`${dark}`}</option>
             <option>{`${light}`}</option>
@@ -95,7 +118,11 @@ export default function GameSetup(props) {
       {!props.forStats && (
         <>
           <label htmlFor="game-format">Game Format</label>
-          <select name="game-format" value={gameFormat} onChange={(e) => setGameFormat(e.target.value)}>
+          <select
+            name="game-format"
+            value={gameFormat}
+            onChange={(e) => setGameFormat(e.target.value)}
+          >
             <option>{`3v3`}</option>
             <option>{`4v4`}</option>
             <option>{`5v5`}</option>

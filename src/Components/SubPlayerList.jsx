@@ -1,10 +1,16 @@
-import React from 'react';
-import '../styles/Subs.css';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { timeToMinSec, timeOnPoint } from '../utils/timeUtils';
-import arrayMove from 'array-move';
+import React from "react";
+import "../styles/Subs.css";
+import {
+  SortableContainer,
+  SortableElement,
+  SortableHandle,
+} from "react-sortable-hoc";
+import { timeToMinSec, timeOnPoint } from "../utils/timeUtils";
+import arrayMove from "array-move";
 
-const DragHandle = SortableHandle(() => <i className={`material-icons handle`}>drag_handle</i>);
+const DragHandle = SortableHandle(() => (
+  <i className={`material-icons handle`}>drag_handle</i>
+));
 
 const SortableList = SortableContainer(({ props }) => {
   return (
@@ -28,13 +34,19 @@ const SortableItem = SortableElement(({ player, ind, props }) => {
   return (
     <div
       className={`player-input sub-player`}
-      style={ind === numPlayers - 1 ? { marginBottom: '3rem' } : {}}
+      style={ind === numPlayers - 1 ? { marginBottom: "3rem" } : {}}
     >
-      <div className={`player-name sub-name ${props.darkTeam === props.statTeam ? 'dark' : ''}`}>
+      <div
+        className={`player-name sub-name ${
+          props.darkTeam === props.statTeam ? "dark" : ""
+        }`}
+      >
         <span className="player-text">{player.name}</span>
         {ind < numPlayers ? (
           <span>{`Point: ${
-            player.lastTimeIn ? timeOnPoint(player.lastTimeIn, props.gameTime) : '0:00'
+            player.lastTimeIn
+              ? timeOnPoint(player.lastTimeIn, props.gameTime)
+              : "0:00"
           }`}</span>
         ) : (
           <span>{`Total: ${timeToMinSec(player.timeOnField)}`}</span>
@@ -42,7 +54,9 @@ const SortableItem = SortableElement(({ player, ind, props }) => {
       </div>
       {ind < numPlayers && (
         <button
-          className={`btn sub-btn ${props.subPlayerSelected === player.name ? 'btn-sec' : ''}`}
+          className={`btn sub-btn ${
+            props.subPlayerSelected === player.name ? "btn-sec" : ""
+          }`}
           onClick={() => props.handleOut(player)}
         >
           Sub Out
@@ -52,7 +66,9 @@ const SortableItem = SortableElement(({ player, ind, props }) => {
         <>
           <DragHandle />
           <button
-            className={`btn sub-btn ${props.subPlayerSelected === player.name ? 'btn-sec' : ''}`}
+            className={`btn sub-btn ${
+              props.subPlayerSelected === player.name ? "btn-sec" : ""
+            }`}
             onClick={() => props.handleIn(player)}
           >
             Sub In

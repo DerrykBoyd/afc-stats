@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function DefenceButtons(props) {
   return (
@@ -9,7 +9,7 @@ export default function DefenceButtons(props) {
         onClick={(e) => props.handleStatClick(e, props.player.name)}
       >
         D-Play
-        <div className="score-badge">{props.player['D-Play']}</div>
+        <div className="score-badge">{props.player["D-Play"]}</div>
       </button>
       <button
         className="btn stat-btn"

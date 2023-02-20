@@ -1,25 +1,28 @@
-import React, { useState } from 'react';
-import GameSetup from './GameSetup';
-import GameInfo from './GameInfo';
-import StatPlayerList from './StatPlayerList';
-import '../styles/Stats.css';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import GameSetup from "./GameSetup";
+import GameInfo from "./GameInfo";
+import StatPlayerList from "./StatPlayerList";
+import "../styles/Stats.css";
+import { toast } from "react-toastify";
+import { useFetchTeams } from "../react-query/teams";
 
 export default function Stats(props) {
   // show warning on page reload attempt during game
   window.onbeforeunload = (e) => {
-    if (!props.showStatSetup) e.returnValue = 'Game will not be saved.';
+    if (!props.showStatSetup) e.returnValue = "Game will not be saved.";
   };
 
+  const { data: teams } = useFetchTeams();
+
   const [showAddPlayer, setShowAddPlayer] = useState(false);
-  const [newPlayer, setNewPlayer] = useState('');
+  const [newPlayer, setNewPlayer] = useState("");
   const [prevEntry, setPrevEntry] = useState({
-    action: '',
-    player: '',
+    action: "",
+    player: "",
     turnover: false,
   });
 
-  const handleStatClick = (e, player = '', turnover = true) => {
+  const handleStatClick = (e, player = "", turnover = true) => {
     // start timer automatically if not started already
     if (!props.gameHistory.length || props.paused) props.startTimer();
     toast.dismiss();
@@ -27,52 +30,58 @@ export default function Stats(props) {
     // set the game history
     let newHistory = [...props.gameHistory];
     // get the last entry and set player if available
-    let lastEntry = newHistory[newHistory.length - 1] || '';
-    let secLastEntry = newHistory[newHistory.length - 2] || '';
-    let lastPlayer = '';
-    let secLastPlayer = '';
+    let lastEntry = newHistory[newHistory.length - 1] || "";
+    let secLastEntry = newHistory[newHistory.length - 2] || "";
+    let lastPlayer = "";
+    let secLastPlayer = "";
     // set last throwers for Point and Drop
-    if (lastEntry && (action === 'Point' || action === 'Drop')) {
-      lastPlayer = lastEntry.player || '';
-      if (!secLastEntry.turnover) secLastPlayer = secLastEntry.player || '';
+    if (lastEntry && (action === "Point" || action === "Drop")) {
+      lastPlayer = lastEntry.player || "";
+      if (!secLastEntry.turnover) secLastPlayer = secLastEntry.player || "";
     }
     // Validate first action of a possession is a touch
-    if (props.offense && action !== 'Touch' && (lastEntry.turnover || !newHistory.length)) {
-      toast.error('First action of a possession must be a touch');
+    if (
+      props.offense &&
+      action !== "Touch" &&
+      (lastEntry.turnover || !newHistory.length)
+    ) {
+      toast.error("First action of a possession must be a touch");
       return;
     }
     // Validate cannot drop own throw
-    if (action === 'Drop' && lastEntry.player === player) {
-      toast.error('Cannot drop own throw');
+    if (action === "Drop" && lastEntry.player === player) {
+      toast.error("Cannot drop own throw");
       return;
     }
     // set last throwers for touch (if not right after turnover)
-    if (action === 'Touch' && !lastEntry.turnover) {
+    if (action === "Touch" && !lastEntry.turnover) {
       if (player === lastEntry.player) {
-        toast.error('Cannot touch the disc twice in a row');
+        toast.error("Cannot touch the disc twice in a row");
         return;
       } else {
-        lastPlayer = lastEntry.player || '';
-        if (!secLastEntry.turnover) secLastPlayer = secLastEntry.player || '';
+        lastPlayer = lastEntry.player || "";
+        if (!secLastEntry.turnover) secLastPlayer = secLastEntry.player || "";
       }
     }
     // Validate throwaway was by lastPlayer
-    if (action === 'T-Away') {
-      if (lastEntry.action !== 'Touch') {
-        toast.error('Throwaway can only be recorded following a touch');
+    if (action === "T-Away") {
+      if (lastEntry.action !== "Touch") {
+        toast.error("Throwaway can only be recorded following a touch");
         return;
       } else if (lastEntry.player !== player) {
         console.log(lastEntry.player);
-        toast.error(`Only player in possession (${lastEntry.player}) can throwaway`);
+        toast.error(
+          `Only player in possession (${lastEntry.player}) can throwaway`
+        );
         return;
       }
     }
     // set the score for point, GSO
     let newScore = { ...props.score };
-    if (action === 'Point') {
+    if (action === "Point") {
       props.statTeam === props.darkTeam ? newScore.dark++ : newScore.light++;
     }
-    if (action === 'GSO') {
+    if (action === "GSO") {
       props.statTeam === props.darkTeam ? newScore.light++ : newScore.dark++;
     }
     props.setScore(newScore);
@@ -97,9 +106,9 @@ export default function Stats(props) {
       if (el.name === player) {
         //debugger
         // Add touch for a drop
-        if (action === 'Drop') el.Touch++;
+        if (action === "Drop") el.Touch++;
         // Add touch for a point if not added already, also add to game history
-        if (action === 'Point') {
+        if (action === "Point") {
           if (lastPlayer !== player) {
             el.Touch++;
             let addHistEntry = {
@@ -109,14 +118,14 @@ export default function Stats(props) {
               statTeam: props.statTeam,
               [`${props.darkTeam}_score`]: newScore.dark,
               [`${props.lightTeam}_score`]: newScore.light,
-              action: 'Touch',
+              action: "Touch",
               player: player,
               lastPlayer: lastPlayer,
               secLastPlayer: secLastPlayer,
               turnover: false,
             };
             newHistory.push(addHistEntry);
-          } else if (secLastEntry.action !== 'D-Play') {
+          } else if (secLastEntry.action !== "D-Play") {
             historyEntry.lastPlayer = secLastPlayer;
             historyEntry.secLastPlayer = secLastEntry.lastPlayer;
           }
@@ -125,13 +134,17 @@ export default function Stats(props) {
       }
       // give assist to lastPlayer if not the same as current player or if Callahan goal
       if (
-        action === 'Point' &&
+        action === "Point" &&
         el.name === lastPlayer &&
         (lastPlayer !== player || secLastEntry.turnover || !secLastEntry)
       )
         el.Assist++;
       // give assist to secLastPlayer if last touch was by same player
-      else if (action === 'Point' && el.name === secLastPlayer && lastPlayer === player)
+      else if (
+        action === "Point" &&
+        el.name === secLastPlayer &&
+        lastPlayer === player
+      )
         el.Assist++;
     });
     props.setPlayerStats(newPlayerStats);
@@ -140,8 +153,8 @@ export default function Stats(props) {
             time: ${historyEntry.time}`);
 
     toast.success(
-      `Last Entry: ${action}${player ? ' - ' + player : ''} ${
-        lastPlayer ? ' from ' + lastPlayer : ''
+      `Last Entry: ${action}${player ? " - " + player : ""} ${
+        lastPlayer ? " from " + lastPlayer : ""
       }`
     );
     setPrevEntry({ action: action, player: player, turnover: turnover });
@@ -157,20 +170,20 @@ export default function Stats(props) {
     // remove last entry from game history
     let undoEntry = newHistory.pop();
     if (!undoEntry) {
-      toast.info('Nothing to undo');
+      toast.info("Nothing to undo");
       return;
     }
-    console.log('UNDO');
+    console.log("UNDO");
     // undo playerStats count
     let newPlayerStats = [...props.playerStats];
     newPlayerStats.forEach((el) => {
       if (el.name === undoEntry.player) {
-        if (undoEntry.action === 'Drop') el.Touch--;
-        if (undoEntry.action === 'Point' && !undoEntry.lastPlayer) el.Assist--;
+        if (undoEntry.action === "Drop") el.Touch--;
+        if (undoEntry.action === "Point" && !undoEntry.lastPlayer) el.Assist--;
         el[undoEntry.action]--;
       }
       // remove assists and extra touch from game history for goals
-      if (undoEntry.action === 'Point') {
+      if (undoEntry.action === "Point") {
         if (undoEntry.lastPlayer === el.name) {
           el.Assist--;
         }
@@ -180,18 +193,23 @@ export default function Stats(props) {
     // undo turnover and change buttons
     if (undoEntry.turnover) props.toggleOffense();
     // undo points and change score
-    if (undoEntry.action === 'Point') {
+    if (undoEntry.action === "Point") {
       props.statTeam === props.darkTeam ? newScore.dark-- : newScore.light--;
     }
-    if (undoEntry.action === 'GSO') {
+    if (undoEntry.action === "GSO") {
       props.statTeam === props.darkTeam ? newScore.light-- : newScore.dark--;
     }
     // show undo action
-    toast.info(`UNDO: ${undoEntry.action}${undoEntry.player ? ` by ${undoEntry.player}` : ''}`);
+    toast.info(
+      `UNDO: ${undoEntry.action}${
+        undoEntry.player ? ` by ${undoEntry.player}` : ""
+      }`
+    );
     // set new state
     props.setScore(newScore);
     props.setGameHistory(newHistory);
-    if (!newHistory.length) setPrevEntry({ action: '', player: '', turnover: false });
+    if (!newHistory.length)
+      setPrevEntry({ action: "", player: "", turnover: false });
     else {
       let newPrevEntry = newHistory[newHistory.length - 1];
       setPrevEntry({
@@ -209,14 +227,14 @@ export default function Stats(props) {
       Touch: 0,
       Assist: 0,
       Point: 0,
-      'T-Away': 0,
+      "T-Away": 0,
       Drop: 0,
-      'D-Play': 0,
+      "D-Play": 0,
       GSO: 0,
     });
     props.setPlayerStats(newPlayerStats);
     setShowAddPlayer(false);
-    setNewPlayer('');
+    setNewPlayer("");
   };
 
   return (
@@ -225,7 +243,7 @@ export default function Stats(props) {
         {!props.showSubSetup && <p>Currently tracking Subs.</p>}
         {props.showSubSetup && props.showStatSetup && (
           <GameSetup
-            teams={props.teams}
+            teams={teams}
             finishSetup={props.finishSetup}
             setTestGame={props.setTestGame}
             forStats={true}
@@ -255,13 +273,15 @@ export default function Stats(props) {
               <button
                 className="btn opt-btn"
                 onClick={() => {
-                  if (window.confirm('Cancel Game? Progress will not be saved.')) {
+                  if (
+                    window.confirm("Cancel Game? Progress will not be saved.")
+                  ) {
                     toast.dismiss();
-                    toast.error('Game Deleted', { autoClose: 2500 });
+                    toast.error("Game Deleted", { autoClose: 2500 });
                     props.resetGame();
                     setPrevEntry({
-                      action: '',
-                      player: '',
+                      action: "",
+                      player: "",
                       turnover: false,
                     });
                   }
@@ -270,18 +290,18 @@ export default function Stats(props) {
                 Exit Game
               </button>
               <button
-                className={`btn ${!props.paused ? 'btn-inactive' : ''} opt-btn`}
+                className={`btn ${!props.paused ? "btn-inactive" : ""} opt-btn`}
                 onClick={() => {
                   if (!props.paused) {
                     toast.error(
-                      'Cannot finish game when timer is running. Pause timer to finish game early.',
+                      "Cannot finish game when timer is running. Pause timer to finish game early.",
                       { autoClose: 2500 }
                     );
                     return;
                   }
                   toast.dismiss();
-                  toast.success('Game Saved', { autoClose: 3000 });
-                  props.saveGame('stats');
+                  toast.success("Game Saved", { autoClose: 3000 });
+                  props.saveGame("stats");
                 }}
               >
                 Finish & Save
@@ -320,7 +340,10 @@ export default function Stats(props) {
             )}
             {showAddPlayer && (
               <div className="add-player-input">
-                <i className="material-icons" onClick={() => setShowAddPlayer(false)}>
+                <i
+                  className="material-icons"
+                  onClick={() => setShowAddPlayer(false)}
+                >
                   close
                 </i>
                 <input

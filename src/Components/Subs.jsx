@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import GameSetup from './GameSetup';
-import GameInfo from './GameInfo';
-import SubPlayerList from './SubPlayerList';
-import { toast } from 'react-toastify';
-import { timeToSecs, timeToMinSec } from '../utils/timeUtils';
+import React, { useState } from "react";
+import GameSetup from "./GameSetup";
+import GameInfo from "./GameInfo";
+import SubPlayerList from "./SubPlayerList";
+import { toast } from "react-toastify";
+import { timeToSecs, timeToMinSec } from "../utils/timeUtils";
+import { useFetchTeams } from "../react-query/teams";
 
 export default function Subs(props) {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
-  const [newPlayer, setNewPlayer] = useState('');
+  const [newPlayer, setNewPlayer] = useState("");
 
   // show warning on page reload attempt during game
   window.onbeforeunload = (e) => {
-    if (!props.showSubSetup) e.returnValue = 'Game will not be saved.';
+    if (!props.showSubSetup) e.returnValue = "Game will not be saved.";
   };
 
   const completeSub = (playerIn, playerOut) => {
@@ -49,7 +50,7 @@ export default function Subs(props) {
     props.setSubStats(newSubStats);
     props.setSubInSelected(false);
     props.setSubOutSelected(false);
-    props.setSubPlayerSelected('');
+    props.setSubPlayerSelected("");
     toast.dismiss();
     toast.success(`Subbed in ${playerIn} for ${playerOut}`);
   };
@@ -101,15 +102,24 @@ export default function Subs(props) {
 
   const resetSubs = () => {
     if (!props.paused) {
-      toast.error('Cannot reset game when timer is running. Pause timer to reset game.', {
-        autoClose: 2500,
-      });
+      toast.error(
+        "Cannot reset game when timer is running. Pause timer to reset game.",
+        {
+          autoClose: 2500,
+        }
+      );
       return;
     }
-    if (window.confirm('Reset Game? Progress will not be saved.')) {
+    if (window.confirm("Reset Game? Progress will not be saved.")) {
       toast.dismiss();
-      toast.info('Game Reset', { autoClose: 2500 });
-      props.finishSetup(props.gameLength, props.darkTeam, props.lightTeam, props.statTeam, 'subs');
+      toast.info("Game Reset", { autoClose: 2500 });
+      props.finishSetup(
+        props.gameLength,
+        props.darkTeam,
+        props.lightTeam,
+        props.statTeam,
+        "subs"
+      );
       props.resetTimer();
       props.pauseTimer();
       props.setPaused(true);
@@ -126,15 +136,17 @@ export default function Subs(props) {
     });
     props.setSubStats(newSubStats);
     setShowAddPlayer(false);
-    setNewPlayer('');
+    setNewPlayer("");
   };
+
+  const { data: teams } = useFetchTeams();
 
   return (
     <div className="App">
       {!props.showStatSetup && <p>Currently tracking Stats.</p>}
       {props.showStatSetup && props.showSubSetup && (
         <GameSetup
-          teams={props.teams}
+          teams={teams}
           finishSetup={props.finishSetup}
           setTestGame={props.setTestGame}
           forStats={false}
@@ -158,9 +170,11 @@ export default function Subs(props) {
             <button
               className="btn opt-btn"
               onClick={() => {
-                if (window.confirm('Cancel Game? Progress will not be saved.')) {
+                if (
+                  window.confirm("Cancel Game? Progress will not be saved.")
+                ) {
                   toast.dismiss();
-                  toast.error('Game Deleted', { autoClose: 2500 });
+                  toast.error("Game Deleted", { autoClose: 2500 });
                   props.resetGame();
                 }
               }}
@@ -168,25 +182,25 @@ export default function Subs(props) {
               Exit Game
             </button>
             <button
-              className={`btn ${!props.paused ? 'btn-inactive' : ''} opt-btn`}
+              className={`btn ${!props.paused ? "btn-inactive" : ""} opt-btn`}
               onClick={resetSubs}
             >
               Reset Game
             </button>
             <button
-              className={`btn ${!props.paused ? 'btn-inactive' : ''} opt-btn`}
+              className={`btn ${!props.paused ? "btn-inactive" : ""} opt-btn`}
               onClick={() => {
                 if (!props.paused) {
                   toast.error(
-                    'Cannot finish game when timer is running. Pause timer to finish game early.',
+                    "Cannot finish game when timer is running. Pause timer to finish game early.",
                     { autoClose: 2500 }
                   );
                   return;
                 }
                 finishGameSubs();
                 toast.dismiss();
-                toast.success('Game Saved', { autoClose: 3000 });
-                props.saveGame('subs');
+                toast.success("Game Saved", { autoClose: 3000 });
+                props.saveGame("subs");
               }}
             >
               Finish & Save
@@ -206,13 +220,19 @@ export default function Subs(props) {
             numPlayers={props.gameFormat}
           />
           {!showAddPlayer && (
-            <button className="btn stat-btn stat-btn-after" onClick={() => setShowAddPlayer(true)}>
+            <button
+              className="btn stat-btn stat-btn-after"
+              onClick={() => setShowAddPlayer(true)}
+            >
               Add Player
             </button>
           )}
           {showAddPlayer && (
             <div className="add-player-input">
-              <i className="material-icons" onClick={() => setShowAddPlayer(false)}>
+              <i
+                className="material-icons"
+                onClick={() => setShowAddPlayer(false)}
+              >
                 close
               </i>
               <input
