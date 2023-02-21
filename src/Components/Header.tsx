@@ -22,7 +22,7 @@ export default function Header() {
           </button>
         )}
       </header>
-      {import.meta.env.DEV ? (
+      {window.location.origin.includes("staging--") ? (
         <>
           <h1>** STAGING SITE **</h1>
           {seenModal ? null : (
