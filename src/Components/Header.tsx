@@ -1,11 +1,9 @@
-import React from "react";
+import { useState } from "react";
 import { firebaseApp } from "../App";
 import "../styles/Header.css";
 
 export default function Header() {
-  const [modalOpen, setModalOpen] = React.useState(
-    import.meta.env.VITE_ENV === "staging"
-  );
+  const [modalOpen, setModalOpen] = useState(true);
 
   const signOut = () => {
     firebaseApp.auth().signOut();

@@ -1,14 +1,8 @@
-import React from "react";
-
 interface Props {
   serviceWorkerReg: ServiceWorkerRegistration;
-  closeToast: () => void;
 }
 
-export default function ServiceWorkerToast({
-  serviceWorkerReg,
-  closeToast,
-}: Props) {
+export default function ServiceWorkerToast({ serviceWorkerReg }: Props) {
   const updateServiceWorker = () => {
     const registrationWaiting = serviceWorkerReg.waiting;
     if (registrationWaiting) {
@@ -29,7 +23,6 @@ export default function ServiceWorkerToast({
         className="btn"
         onClick={() => {
           updateServiceWorker();
-          closeToast();
         }}
       >
         Update

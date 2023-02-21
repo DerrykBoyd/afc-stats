@@ -6,7 +6,7 @@
     "types": ["vite/client"],
     "allowJs": true,
     "checkJs": false,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,

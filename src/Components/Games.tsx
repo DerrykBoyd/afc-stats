@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { CSVLink } from "react-csv";
 import "../styles/GameList.css";
-import StatTable from "./StatTable";
-import SubStatTable from "./SubStatTable";
+import { StatTable } from "./StatTable";
+import { SubStatTable } from "./SubStatTable";
 import { toast } from "react-toastify";
 import {
   getStatsCsvData,

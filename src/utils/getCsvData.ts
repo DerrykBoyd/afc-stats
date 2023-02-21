@@ -50,11 +50,11 @@ export function getSubsCsvData(game: Game) {
       timeOnField: secsToIsoString(entry.timeOnField),
     };
   });
-  const subStatsCsv = game.subStats.map((entry) => {
+  const subStatsCsv = game.subStats?.map((entry) => {
     return {
       ...entry,
-      averageTimeOn: secsToIsoString(entry.averageTimeOnSecs),
-      timeOnField: secsToIsoString(entry.timeOnField),
+      averageTimeOn: secsToIsoString(entry.averageTimeOnSecs || 0),
+      timeOnField: secsToIsoString(entry.timeOnField || 0),
     };
   });
   return { subHistoryCsv, subStatsCsv };

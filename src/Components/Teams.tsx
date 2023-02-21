@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Team from "./Team";
 import "../styles/Teams.css";
 import { useSaveTeam, useFetchTeams } from "../react-query/teams";
@@ -12,8 +12,8 @@ const TeamList = () => {
 
   return (
     <div className="team-list">
-      {teams.map((team, ind) => (
-        <Team team={team} ind={ind} key={team.name} />
+      {teams.map((team) => (
+        <Team team={team} key={team.name} />
       ))}
     </div>
   );

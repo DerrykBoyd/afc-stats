@@ -17,19 +17,44 @@ import {
 } from "firebase/firestore";
 import { db } from "../App";
 
+export interface StatEntry {
+  Assist: number;
+  "D-Play": number;
+  Drop: number;
+  GM: string;
+  GSO: number;
+  "GSO-Mark": number;
+  Point: number;
+  "T-Away": number;
+  Touch: number;
+  VS: string;
+  name: string;
+}
+
+export interface SubStatEntry {
+  averageTimeOnMMSS: string;
+  averageTimeOnSecs: number;
+  lastTimeIn: string;
+  name: string;
+  shiftLengths: number[];
+  shifts: number;
+  timeMMSS: string;
+  timeOnField: number;
+}
+
 export interface Game {
   _id: string;
   deleted?: boolean;
   darkTeam: string;
   date: Timestamp;
   docType: string;
-  gameHistory: any[];
+  gameHistory?: any[];
   gameLength: number;
   lightTeam: string;
-  playerStats: any[];
-  subStats: any[];
-  subHistory: any[];
-  score: {
+  playerStats?: StatEntry[];
+  subStats?: SubStatEntry[];
+  subHistory?: any[];
+  score?: {
     dark: number;
     light: number;
   };
@@ -70,9 +95,14 @@ async function fetchGames(lastDate: Timestamp | undefined): Promise<Game[]> {
   const gamesRef = collection(db, "games");
   let q;
   if (lastDate) {
-    q = query(gamesRef, orderBy("date"), limit(20), startAfter(lastDate));
+    q = query(
+      gamesRef,
+      orderBy("date", "desc"),
+      limit(20),
+      startAfter(lastDate)
+    );
   } else {
-    q = query(gamesRef, orderBy("date"), limit(20));
+    q = query(gamesRef, orderBy("date", "desc"), limit(20));
   }
   const querySnapshot = await getDocs(q);
   const games: Game[] = [];

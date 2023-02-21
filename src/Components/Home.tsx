@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
 import Header from "./Header";
@@ -6,21 +5,20 @@ import Header from "./Header";
 // Firebase
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import { useFetchUser } from "../react-query/users";
-import { User } from "firebase/auth";
 import { firebaseApp, uiConfig } from "../App";
+import { useAuthUser } from "../hooks/useAuthUser";
 
-interface Props {
-  user: User;
-}
+export default function Home() {
+  const authUser = useAuthUser();
+  const { data: dbUser, isInitialLoading } = useFetchUser(authUser);
 
-export default function Home({ user }: Props) {
-  const { data: dbUser } = useFetchUser(user);
+  if (isInitialLoading) return <div>Loading...</div>;
 
   return (
     <div className="App">
       <Header />
       <div className="home-content">
-        {!dbUser && (
+        {!authUser && (
           <StyledFirebaseAuth
             uiConfig={uiConfig}
             firebaseAuth={firebaseApp.auth()}

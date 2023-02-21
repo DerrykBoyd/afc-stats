@@ -1,7 +1,7 @@
 export const timeToMinSec = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = Math.round(seconds - mins * 60);
-  return `${mins.toString()}:${secs.toString().padStart(2, 0)}`;
+  return `${mins.toString()}:${secs.toString().padStart(2, "0")}`;
 };
 
 export const timeToSecs = (minSecs: string) => {
@@ -16,7 +16,7 @@ export const timeOnPoint = (lastTimeIn: string, gameTime: string) => {
 };
 
 export const secsToIsoString = (seconds: number) => {
-  const date = new Date(Math.round(seconds * 1000));
+  const date = new Date(seconds * 1000);
 
-  return date.toISOString().substr(11, 12);
+  return date.toISOString().slice(11, 19);
 };

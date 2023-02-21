@@ -18,12 +18,11 @@ async function fetchUser(user: User): Promise<DbUser> {
   const docRef = doc(db, "users", user.uid);
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
-    console.log("User Exists in DB");
     return docSnap.data() as DbUser;
   } else {
     console.log("Adding New User to DB");
     const newDbUser: DbUser = {
-      email: user.email,
+      email: user.email || "",
       name: user.displayName || "",
       profileURL: user.photoURL || "",
       uid: user.uid,
@@ -37,7 +36,7 @@ export function useFetchUser(user: User | null) {
   return useQuery({
     queryKey: ["user", user?.uid],
     enabled: !!user,
-    cacheTime: Infinity,
+    staleTime: Infinity,
     queryFn: () => fetchUser(user as User),
   });
 }
