@@ -228,7 +228,9 @@ const GameList = () => {
   return (
     <div className="team-list">
       {gamesToShow.map((page) =>
-        page.map((game) => <GameCard key={game._id} game={game} />)
+        page.map((game) =>
+          game.deleted ? null : <GameCard key={game._id} game={game} />
+        )
       )}
     </div>
   );

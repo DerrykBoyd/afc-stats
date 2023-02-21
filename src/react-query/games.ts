@@ -108,7 +108,6 @@ async function fetchGames(lastDate: Timestamp | undefined): Promise<Game[]> {
   const games: Game[] = [];
   querySnapshot.forEach((doc) => {
     const game = doc.data() as Game;
-    if (game.deleted) return;
     games.push(game);
   });
   return games;
