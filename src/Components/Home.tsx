@@ -3,10 +3,14 @@ import "../styles/Home.css";
 import Header from "./Header";
 
 // Firebase
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import SFB from "react-firebaseui/StyledFirebaseAuth";
 import { useFetchUser } from "../react-query/users";
 import { firebaseApp, uiConfig } from "../App";
 import { useAuthUser } from "../hooks/useAuthUser";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const StyledFirebaseAuth = SFB.default ? SFB.default : SFB;
 
 export default function Home() {
   const authUser = useAuthUser();
