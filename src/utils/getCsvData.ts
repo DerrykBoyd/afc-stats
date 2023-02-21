@@ -1,6 +1,10 @@
 import { secsToIsoString, timeToSecs } from "./timeUtils";
-import Papa from "papaparse";
+import PP from "papaparse";
 import { Game } from "../react-query/games";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const Papa = PP.default ? PP.default : PP;
 
 /** Takes a stats game object and converts times to HH:MM:SS.mmm
  * @param {object} game - The game object

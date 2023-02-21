@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -6,8 +6,7 @@ import {
   Redirect,
   NavLink,
 } from "react-router-dom";
-import * as serviceWorker from "./serviceWorker";
-import Timer from "easytimer.js";
+import { Timer } from "easytimer.js";
 import { ToastContainer, toast, Slide } from "react-toastify";
 
 // Firebase
@@ -26,7 +25,6 @@ import Stats from "./Components/Stats";
 import Subs from "./Components/Subs";
 import Teams from "./Components/Teams";
 import Games from "./Components/Games";
-import ServiceWorkerToast from "./Components/Toasts/ServiceWorkerToast";
 
 // utils
 import { downloadGameCsv } from "./utils/getCsvData";
@@ -99,37 +97,6 @@ function App() {
 
   const authUser = useAuthUser();
   const { data: userDb } = useFetchUser(authUser);
-
-  const [serviceWorkerInit, setServiceWorkerInit] = useState(false);
-  const [serviceWorkerReg, setServiceWorkerReg] =
-    useState<ServiceWorkerRegistration | null>(null);
-
-  // If you want your app to work offline and load faster, you can change
-  // unregister() to register() below. Note this comes with some pitfalls.
-  // Learn more about service workers: https://bit.ly/CRA-PWA
-  serviceWorker.register({
-    onSuccess: () => setServiceWorkerInit(true),
-    onUpdate: (reg: ServiceWorkerRegistration) => {
-      setServiceWorkerReg(reg);
-    },
-  });
-
-  // show service worker toast on first install
-  useEffect(() => {
-    if (serviceWorkerInit) {
-      console.log("App available for offline use.");
-    }
-  }, [serviceWorkerInit]);
-
-  // allow user to update site when service worker changes and no active game
-  useEffect(() => {
-    if (!gameStarted && serviceWorkerReg && serviceWorkerReg.waiting) {
-      toast.info(<ServiceWorkerToast serviceWorkerReg={serviceWorkerReg} />, {
-        closeOnClick: false,
-        autoClose: false,
-      });
-    }
-  }, [gameStarted, serviceWorkerReg]);
 
   const gameTimer = useRef(
     new Timer({
