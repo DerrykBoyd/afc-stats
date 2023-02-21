@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [react(), viteTsconfigPaths()],
   esbuild: {
     loader: "tsx",
-    jsxInject: `import React from 'react'`,
   },
   optimizeDeps: {
     esbuildOptions: {

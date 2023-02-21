@@ -37,29 +37,18 @@ import { useAuthUser } from "./hooks/useAuthUser";
 import { useGetGameDetails } from "./hooks/useGetGameDetails";
 import { useAddSubEntries } from "./hooks/uesAddSubEntries";
 
-let firebaseConfig = {
-  apiKey: "AIzaSyCrkAF4y3mmQsutAmonYLVmJbhUQiYHe98",
-  authDomain: "afcpl-stats.firebaseapp.com",
-  databaseURL: "https://afcpl-stats.firebaseio.com",
-  projectId: "afcpl-stats",
-  storageBucket: "afcpl-stats.appspot.com",
-  messagingSenderId: "776486237669",
-  appId: "1:776486237669:web:cc37c431513793409feb0c",
-  measurementId: "G-CC84WXERHT",
-};
+const env = import.meta.env;
 
-if (import.meta.env.VITE_ENV === "staging") {
-  firebaseConfig = {
-    apiKey: "AIzaSyDR3HjhpgdbByApMwFsMhN4pqbapKXOk9o",
-    authDomain: "afcpl-stats-staging.firebaseapp.com",
-    databaseURL: "https://afcpl-stats-staging.firebaseio.com",
-    projectId: "afcpl-stats-staging",
-    storageBucket: "afcpl-stats-staging.appspot.com",
-    messagingSenderId: "929297586839",
-    appId: "1:929297586839:web:e82366ea65c8a457b7e7d2",
-    measurementId: "G-X5EY3MEEL8",
-  };
-}
+const firebaseConfig = {
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: env.VITE_FIREBASE_DATABASE_URL,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID,
+  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID,
+};
 
 export const uiConfig = {
   signInOptions: [
